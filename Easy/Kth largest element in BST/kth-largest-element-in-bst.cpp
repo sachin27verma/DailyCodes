@@ -98,19 +98,28 @@ class Solution
 {
     public:
     vector<int>v;
-    void inorder(Node *root)
+    void inorder(Node *root,int &ct,int K)
     {
         if(root)
         {
-            inorder(root->right);
+            inorder(root->right,ct,K);
+            // ct++;
+            // if(ct==K)
+            // {
+            //     ct=root->data;
+            //     return ct;
+            // }
             v.push_back(root->data);
-            inorder(root->left);
+            inorder(root->left,ct,K);
         }
+    
     }
     int kthLargest(Node *root, int K)
     {
         //Your code here
-        inorder(root);
+        int ct=1;
+        inorder(root,ct,K);
+        
         return v[K-1];
     }
 };
