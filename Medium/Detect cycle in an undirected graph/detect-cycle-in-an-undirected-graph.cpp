@@ -6,43 +6,33 @@ using namespace std;
 class Solution {
   public:
     // Function to detect cycle in an undirected graph.
-  
-    bool dfs(vector<int>adj[], int i,int k,vector<bool>&visited)
-    {
-        visited[i]=true;
-       bool isLoopExisted=false;
-        
-        for(int m:adj[i])
-        {
-            if(visited[m] && m==k)
-            continue;
-            if(visited[m])
-            return true ;
-           isLoopExisted|=dfs(adj,m,i,visited);
-        }
-        
-        return isLoopExisted;
-    }
-    bool isCycle(int V, vector<int> adj[]) {
-        // Code here
-          int N=4+1e5;
-    vector<bool>visited(N);
-    for(int i=0; i<N; i++)
-    {
-        visited[i]=false;
-    }
-        for(int i=0; i<V; i++)
-        {
-            if(visited[i])
-            continue;
-            if(dfs(adj,i,-1,visited))
-            {
+    bool DFS(int v, vector<bool>& visited, vector<int> adj[], int parent) {
+    visited[v] = true;
+
+    for (auto x : adj[v]) {
+        if (!visited[x]) {
+            if (DFS(x, visited, adj, v)) {
                 return true;
-              
+            }
+        } else if (x != parent) { // Corrected from v != parent to x != parent
+            return true;
+        }
+    }
+    return false;
+}
+
+bool isCycle(int v, vector<int> adj[]) {
+    vector<bool> visited(v, false);
+
+    for (int i = 0; i < v; i++) {
+        if (!visited[i]) {
+            if (DFS(i, visited, adj, -1)) {
+                return true;
             }
         }
-        return false;
     }
+    return false;
+}
 };
 
 //{ Driver Code Starts.
