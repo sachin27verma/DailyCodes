@@ -3,43 +3,41 @@
 using namespace std;
 
 // } Driver Code Ends
-
-
 class Solution {
   public:
-    int countPartitions(int n, int d, vector<int>& arr) {
-        int mod = 1e9+7;
-        // Calculating our search space
-        int range = 0;
-        for(int i=0;i<n;i++) range += arr[i]%mod;
-        // if sum is odd and sum is negative then return 0
-        if(range-d < 0 || ((d+range) % 2)) return 0;
-        // calculating the sum for our valid answer
-        int sum = ((range+d)/2);
-        // our cache for storing the answer for sub-problems
-        vector<vector<int>> dp(n+1, vector<int>(sum+1));
-        // Initialization - same as subsetsum
-        for(int i=0;i<n+1;i++){
-            for(int j=0;j<sum+1;j++){
-                if(i==0) dp[i][j] = 0; // if array is empty
-                if(j==0) dp[i][j] = 1; // if sum is 0 but we can return empty set to thats why 1
-            }
-        }
-        // calculating samea as subset sum
-        for(int i=1;i<n+1;i++){
-            for(int j=0;j<sum+1;j++){
-                if(arr[i-1] <= j){
-                    // valid input so we can take this
-                    dp[i][j] = (dp[i-1][j-arr[i-1]] + dp[i-1][j])%mod;
-                }
-                else{
-                    // invalid input so cant take this
-                    dp[i][j] = dp[i-1][j]%mod;
-                }
-            }
-        }
-        return dp[n][sum]%mod; // this will be answer
+ int mod = 1e9 + 7;
+
+int helper(int n, int target, const vector<int>& arr, vector<vector<int>>& dp) {
+    if (n == 0) {
+        return target == 0 ? 1 : 0;
     }
+    if (dp[n][target] != -1) {
+        return dp[n][target];
+    }
+
+    if (arr[n - 1] <= target) {
+        dp[n][target] = (helper(n - 1, target - arr[n - 1], arr, dp) + helper(n - 1, target, arr, dp)) % mod;
+    } else {
+        dp[n][target] = helper(n - 1, target, arr, dp) % mod;
+    }
+
+    return dp[n][target];
+}
+
+int countPartitions(int n, int d, vector<int>& arr) {
+    int sum = accumulate(arr.begin(), arr.end(), 0);
+    int target = d + sum;
+    
+    if (target % 2 != 0) {
+        return 0;
+    }
+
+    target /= 2;
+
+    vector<vector<int>> dp(n + 1, vector<int>(target + 1, -1));
+    return helper(n, target, arr, dp);
+}
+
 };
 
 //{ Driver Code Starts.
